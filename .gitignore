@@ -1,0 +1,23 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated artifacts (rebuild with scripts/)
+store.db
+*.db
+*.db-journal
+index/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
