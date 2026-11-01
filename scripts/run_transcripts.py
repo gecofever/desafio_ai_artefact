@@ -68,14 +68,6 @@ CONVERSATIONS: list[dict[str, Any]] = [
             "I saw 20% off the Yamaha FG800 last month. Is that still valid?",
         ],
     },
-    {
-        "slug": "06-portuguese-first-turn",
-        "title": "A conversation that starts in Portuguese (the default language)",
-        "turns": [
-            "Oi, vocês têm violão Yamaha em estoque?",
-            "E aceita PIX nesse valor?",
-        ],
-    },
 ]
 
 
