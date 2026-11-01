@@ -4,10 +4,10 @@ Run with:
 
     streamlit run app/ui/streamlit_app.py
 
-Two things this screen has to prove, because they are the point of the case:
-the answer is grounded (every factual claim came from a tool, and the trail is
-visible), and policy answers cite a manual section. That is why the tool trail
-is rendered under each answer instead of being hidden in a log file.
+The chat stays customer-facing by default; the tool trail is an audit tool,
+not chat furniture, so it is hidden behind a sidebar toggle ("Ver fontes
+consultadas — modo auditoria"). Turn it on to inspect what each answer
+looked up; leave it off for a clean conversation.
 """
 
 from __future__ import annotations
@@ -56,12 +56,16 @@ def _init_state() -> None:
         st.query_params["s"] = st.session_state.session_id
     if "turns" not in st.session_state:
         st.session_state.turns = load_session(st.session_state.session_id)
+    if "audit_mode" not in st.session_state:
+        st.session_state.audit_mode = False
 
 
 def _render_trail(tool_calls: list[dict]) -> None:
     if not tool_calls:
         return
-    with st.expander(f"🔎 {len(tool_calls)} consulta(s) — de onde veio a resposta"):
+    if not st.session_state.get("audit_mode"):
+        return
+    with st.expander(f"Fontes consultadas ({len(tool_calls)})"):
         for index, call in enumerate(tool_calls, start=1):
             label = TOOL_LABELS.get(call["name"], call["name"])
             st.markdown(f"**{index}. {label}** · `{call['name']}`")
@@ -81,6 +85,14 @@ _init_state()
 with st.sidebar:
     st.header(ASSISTANT_NAME)
     st.caption(f"{STORE_SLOGAN} · Campo Grande/MS")
+
+    st.toggle(
+        "Ver fontes consultadas (modo auditoria)",
+        value=False,
+        key="audit_mode",
+        help="Mostra, sob cada resposta, a trilha de consultas feitas pelo atendente.",
+    )
+
     st.markdown(
         "Atendimento sobre **catálogo, pedidos e políticas**. "
         "Preços, estoque e prazos são consultados no sistema a cada pergunta."
@@ -111,10 +123,15 @@ with st.sidebar:
         st.rerun()
 
 st.title("Atendimento ao cliente")
-st.caption(
-    "O atendente consulta catálogo, pedidos e o manual antes de responder. "
-    "Abra as consultas abaixo de cada resposta para ver a origem dos dados."
-)
+if st.session_state.get("audit_mode"):
+    st.caption(
+        "O atendente consulta catálogo, pedidos e o manual antes de responder. "
+        "Abra as consultas abaixo de cada resposta para ver a origem dos dados."
+    )
+else:
+    st.caption(
+        "O atendente consulta catálogo, pedidos e o manual antes de responder."
+    )
 
 for turn in st.session_state.turns:
     with st.chat_message("user" if turn["role"] == "user" else "assistant"):

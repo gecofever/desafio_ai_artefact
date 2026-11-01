@@ -101,17 +101,21 @@ structure (sections) and swap BM25 for a proper index.
 **Context.** The case asks for something a reviewer can use, and the role is
 full-stack.
 
-**Decision.** A single Streamlit page: chat, tool trail per answer, sample
-questions, transcript export, session persistence.
+**Decision.** A single Streamlit page: chat, tool trail per answer (toggled from
+the sidebar as "Ver fontes consultadas — modo auditoria"), sample questions,
+transcript export, session persistence.
 
 **Why.** It delivers a usable, demonstrable UI in ~150 lines. The tool trail is
 the important part — showing *why* the answer is what it is turns the agent from
 a black box into something reviewable, and that is the argument this project is
 making.
 
-**Consequence accepted.** Streamlit re-runs the script per interaction, so state
-must be explicit (`st.session_state` + SQLite), and there is no HTTP API for
-another client. No streaming, so the answer appears when it is complete.
+**Consequence accepted.** The trail is hidden by default (a clean, natural
+conversation for the customer) and revealed on demand from the sidebar
+(auditing). Streamlit
+re-runs the script per interaction, so state must be explicit
+(`st.session_state` + SQLite), and there is no HTTP API for another client. No
+streaming, so the answer appears when it is complete.
 
 **Rejected.** (a) FastAPI + static front-end: stronger for a product brief,
 costs a day of UI work that adds no evidence to *this* argument. (b) CLI only:
